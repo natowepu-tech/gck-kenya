@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183b2c">
+  <meta name="description" content="Green Congress of Kenya: building an ecologically sustainable, equitable and democratic society.">
+  <title>Green Congress of Kenya | GCK</title>
+  <link rel="icon" type="image/svg+xml" href="images/gck-favicon.svg">
+  <link rel="icon" type="image/png" href="images/gck-log.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner mx-auto flex max-w-7xl items-center justify-between gap-4 px-5">
+      <a class="flex min-w-0 items-center gap-3" href="#home" aria-label="Green Congress of Kenya home">
+        <span class="brand-mark" aria-hidden="true"><img src="images/gck-log.png" alt="GCK logo" class="brand-logo"></span>
+        <span class="min-w-0">
+          <span class="brand-title block truncate font-extrabold text-[#183b2c]">Green Congress of Kenya</span>
+          <span class="brand-subtitle block text-xs font-semibold tracking-widest text-[#64736a]">GCK · PEOPLE & PLANET</span>
+        </span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="navPanel"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+      <nav class="nav-panel" id="navPanel" aria-label="Main navigation">
+        <a class="nav-link" href="#home">Home</a>
+        <a class="nav-link" href="#pillars">About & Pillars</a>
+        <a class="nav-link" href="#news">News</a>
+        <a class="nav-link" href="#media">Media</a>
+        <a class="nav-link" href="#forum">Forum</a>
+        <a class="nav-link" href="#contact">Contact</a>
+        <a class="button-primary" href="#register"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Join / Register</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-inner">
+        <div class="hero-copy-wrap">
+          <span class="eyebrow">A greener, fairer Kenya</span>
+          <h1 id="hero-title">Green Congress Party of Kenya for ecologically sustainable society</h1>
+          <p class="hero-copy">Fostering an Ecologically Sustainable, Equitable, and Democratic Society.</p>
+          <div class="hero-actions">
+            <a class="button-primary" href="#register">Become a Member <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            <a class="button-quiet" href="#manifesto">Read 2027 Manifesto <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <div class="carousel-shell" aria-label="Hero image carousel">
+          <div class="carousel-frame" id="carouselFrame" aria-roledescription="carousel">
+            <div class="carousel-track" id="carouselTrack">
+              <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 1 of 3">
+                <img class="carousel-image" src="images/GCK-Young.png" alt="Green Congress of Kenya youth image">
+              </div>
+              <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 2 of 3">
+                <img class="carousel-image" src="images/GCK-Logoo.png" alt="Green Congress of Kenya campaign image">
+              </div>
+              <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 3 of 3">
+                <img class="carousel-image" src="images/GCK-Planting.png" alt="Green Congress of Kenya planting image">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-controls">
+            <button class="carousel-arrow" id="slidePrev" type="button" aria-label="Previous slide"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+            <div class="carousel-dots" id="carouselDots" aria-label="Choose a slide"></div>
+            <button class="carousel-arrow" id="slideNext" type="button" aria-label="Next slide"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pillars-section" id="pillars" aria-labelledby="pillars-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <div><span class="section-kicker">What guides us</span><h2 id="pillars-title">A future rooted in shared values.</h2></div>
+          <p>Our work begins with care for the natural world, dignity for every person, and democratic participation in the decisions that shape our lives.</p>
+        </div>
+        <div class="pillar-grid">
+          <article class="pillar-card">
+            <span class="pillar-icon"><i class="fa-solid fa-seedling" aria-hidden="true"></i></span>
+            <h3>Ecological Sustainability</h3>
+            <p>Put healthy ecosystems, climate resilience, and responsible stewardship at the heart of public life.</p>
+            <p class="pillar-more">Protecting land, water, and biodiversity supports livelihoods and the wellbeing of future generations.</p>
+            <button class="text-control" type="button" aria-expanded="false">Explore pillar <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-icon"><i class="fa-solid fa-dove" aria-hidden="true"></i></span>
+            <h3>Nonviolence & Peaceful Governance</h3>
+            <p>Advance public dialogue, accountable institutions, and peaceful ways to resolve differences.</p>
+            <p class="pillar-more">A culture of nonviolence creates room for every community to participate safely and meaningfully.</p>
+            <button class="text-control" type="button" aria-expanded="false">Explore pillar <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-icon"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i></span>
+            <h3>Social Justice & Economic Inclusion</h3>
+            <p>Work toward fair opportunity, decent livelihoods, and access to essential services.</p>
+            <p class="pillar-more">Economic inclusion means listening to communities and ensuring that progress is broadly shared.</p>
+            <button class="text-control" type="button" aria-expanded="false">Explore pillar <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-icon"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span>
+            <h3>Grassroots Democracy & Youth Empowerment</h3>
+            <p>Make participation local, accessible, and responsive to the next generation.</p>
+            <p class="pillar-more">Strong civic life grows when young people and local voices help set priorities and shape solutions.</p>
+            <button class="text-control" type="button" aria-expanded="false">Explore pillar <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+          </article>
+        </div>
+        <div class="manifesto-band" id="manifesto">
+          <div><span class="section-kicker manifesto-kicker">2027 manifesto</span><h3>Ideas for a greener, more equitable future.</h3><p>Manifesto publication details will be added here when the official document is available.</p></div>
+          <a class="button-primary" href="#news">View updates <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section content-section" id="media" aria-labelledby="media-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <div><span class="section-kicker">Watch and listen</span><h2 id="media-title">From the ground, in their own words.</h2></div>
+          <p>Video archive layout for rallies, seminars, press conferences, and town halls. Add locally hosted video paths when the media is ready.</p>
+        </div>
+        <div class="toolbar" id="mediaFilters" role="group" aria-label="Filter media by topic">
+          <button class="filter-button" type="button" data-media-filter="all" aria-pressed="true">All media</button>
+          <button class="filter-button" type="button" data-media-filter="Press Release" aria-pressed="false">Press Release</button>
+          <button class="filter-button" type="button" data-media-filter="Grassroots" aria-pressed="false">Grassroots</button>
+          <button class="filter-button" type="button" data-media-filter="Youth Forum" aria-pressed="false">Youth Forum</button>
+        </div>
+        <div class="media-grid" id="mediaGrid">
+          <article class="media-item" data-media-tags="Press Release">
+            <div class="video-stage"><video controls preload="none" aria-label="Press briefing video placeholder"></video><div class="video-empty"><i class="fa-solid fa-film" aria-hidden="true"></i><span>Video file path to add</span></div></div>
+            <div class="media-caption"><h3>Press briefing</h3><div class="tag-row"><span class="tag">Press Release</span></div></div>
+          </article>
+          <article class="media-item" data-media-tags="Grassroots">
+            <div class="video-stage"><video controls preload="none" aria-label="Community town hall video placeholder"></video><div class="video-empty"><i class="fa-solid fa-film" aria-hidden="true"></i><span>Video file path to add</span></div></div>
+            <div class="media-caption"><h3>Community town hall</h3><div class="tag-row"><span class="tag">Grassroots</span></div></div>
+          </article>
+          <article class="media-item" data-media-tags="Youth Forum|Grassroots">
+            <div class="video-stage"><video controls preload="none" aria-label="Youth forum video placeholder"></video><div class="video-empty"><i class="fa-solid fa-film" aria-hidden="true"></i><span>Video file path to add</span></div></div>
+            <div class="media-caption"><h3>Youth forum</h3><div class="tag-row"><span class="tag">Youth Forum</span><span class="tag">Grassroots</span></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section news-section" id="news" aria-labelledby="news-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <div><span class="section-kicker">News & updates</span><h2 id="news-title">A closer look at the work.</h2></div>
+          <p>Search party updates by topic. The sample entries below are illustrative and should be replaced with approved, current news.</p>
+        </div>
+        <div class="toolbar">
+          <label class="search-wrap"><span class="sr-only">Search updates</span><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input class="search-input" id="newsSearch" type="search" placeholder="Search updates" autocomplete="off"></label>
+        </div>
+        <div class="news-grid" id="newsGrid" aria-live="polite"></div>
+        <p class="sample-note">Illustrative sample content. Confirm all dates and details before publication.</p>
+      </div>
+    </section>
+
+    <section class="section content-section" id="register" aria-labelledby="register-title">
+      <div class="section-inner community-grid">
+        <div>
+          <span class="section-kicker">Take part</span>
+          <h2 class="mt-2 mb-4 text-4xl font-extrabold leading-tight text-[#183b2c]" id="register-title">Be part of the conversation.</h2>
+          <p class="max-w-lg leading-7 text-[#64736a]">Register your interest in joining GCK. This demo stores submissions only in this browser; it does not transmit data to a server.</p>
+          <div class="mt-8 border-l-2 border-[#f5b52e] pl-5">
+            <p class="m-0 text-sm font-bold text-[#183b2c]">Local participation. Shared purpose.</p>
+            <p class="mt-2 text-sm leading-6 text-[#64736a]">Use the registration form or share a question with the community forum.</p>
+          </div>
+        </div>
+        <div class="form-panel">
+          <h3>Member registration</h3>
+          <p class="form-intro">Fields marked required must be completed. SMS verification is a non-sending demo placeholder.</p>
+          <form id="registrationForm" novalidate>
+            <div class="form-grid">
+              <div class="field full"><label for="memberName">Full name *</label><input class="field-input" id="memberName" name="name" type="text" autocomplete="name" minlength="2" required aria-describedby="memberNameError"><p class="field-error" id="memberNameError"></p></div>
+              <div class="field"><label for="memberEmail">Email address *</label><input class="field-input" id="memberEmail" name="email" type="email" autocomplete="email" required aria-describedby="memberEmailError"><p class="field-error" id="memberEmailError"></p></div>
+              <div class="field"><label for="memberPhone">Mobile phone number *</label><input class="field-input" id="memberPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="memberPhoneError"><p class="field-error" id="memberPhoneError"></p>
+                <div class="verify-row"><button id="verifyPhone" type="button"><i class="fa-solid fa-comment-sms" aria-hidden="true"></i> Request SMS code</button><span class="verify-note" id="smsStatus">Demo placeholder only</span></div>
+              </div>
+              <div class="field full"><label for="memberLocation">County / Constituency *</label><input class="field-input" id="memberLocation" name="location" type="text" autocomplete="address-level1" required aria-describedby="memberLocationError"><p class="field-error" id="memberLocationError"></p></div>
+              <div class="field full"><label class="check-row" for="memberYouth"><input id="memberYouth" name="youthRepresentative" type="checkbox"><span>I am a youth representative, Gen Z member, or student.</span></label></div>
+            </div>
+            <p class="consent-note">Submitting indicates your interest in being contacted about GCK membership. Connect an approved privacy notice and consent process before production use.</p>
+            <button class="button-primary w-full" type="submit">Submit registration <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <p class="form-status" id="registrationStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section news-section" id="forum" aria-labelledby="forum-title">
+      <div class="section-inner community-grid">
+        <div>
+          <span class="section-kicker">Community Q&A</span>
+          <h2 class="mt-2 mb-4 text-4xl font-extrabold leading-tight text-[#183b2c]" id="forum-title">Ask. Listen. Build together.</h2>
+          <p class="max-w-lg leading-7 text-[#64736a]">Start a respectful conversation or upvote a question you would like the community to explore. Posts are saved in this browser only.</p>
+          <p class="sample-note">Forum content is user-submitted and is not moderated or shared with a server in this demo.</p>
+        </div>
+        <div>
+          <form class="form-panel" id="forumForm" novalidate>
+            <h3>Post a question</h3>
+            <p class="form-intro">Share a topic for discussion with the community.</p>
+            <div class="form-grid">
+              <div class="field full"><label for="forumName">Your name *</label><input class="field-input" id="forumName" name="name" type="text" minlength="2" required aria-describedby="forumNameError"><p class="field-error" id="forumNameError"></p></div>
+              <div class="field full"><label for="forumTopic">Question / topic *</label><textarea class="field-textarea" id="forumTopic" name="topic" minlength="5" maxlength="500" required aria-describedby="forumTopicError"></textarea><p class="field-error" id="forumTopicError"></p></div>
+              <div class="field full"><label for="forumCategory">Category *</label><select class="field-select" id="forumCategory" name="category" required><option value="">Choose a category</option><option>Environment</option><option>Peace & governance</option><option>Social justice</option><option>Youth & democracy</option><option>Other</option></select></div>
+            </div>
+            <button class="button-primary mt-3 w-full" type="submit">Post to forum <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
+            <p class="form-status" id="forumStatus" role="status" aria-live="polite"></p>
+          </form>
+          <div class="mt-6 flex items-center justify-between gap-3"><h3 class="m-0 text-lg font-extrabold text-[#183b2c]">Recent questions</h3><span class="text-xs text-[#64736a]" id="forumCount">0 posts</span></div>
+          <div class="forum-list" id="forumList" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+      <div class="contact-inner">
+        <div><h2 id="contact-title">Green Congress of Kenya</h2><p>Contact details and official channels can be added here.</p></div>
+        <a class="button-outline" href="#register">Join the conversation <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner"><span class="footer-brand">GCK · People & Planet</span><span>Green Congress of Kenya · gck.or.ke</span><span>© <span id="currentYear"></span> Green Congress of Kenya</span></div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"><p id="toastMessage"></p></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
