@@ -32,6 +32,7 @@
         <a class="nav-link" href="#forum">Forum</a>
         <a class="nav-link" href="#contact">Contact</a>
         <a class="nav-link" id="loginNavLink" href="#register">Log in</a>
+        <button class="nav-link nav-action" id="navLogoutButton" type="button" hidden>Log out</button>
         <a class="button-primary" href="#register"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Join / Register</a>
       </nav>
     </div>
@@ -192,8 +193,7 @@
             <button class="button-primary w-full" id="registrationSubmit" type="submit">Create account <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
           </form>
           <div class="auth-session" id="authSession" hidden>
-            <p class="form-intro">Signed in as <strong id="authUserEmail"></strong>.</p>
-            <button class="button-primary" id="signOutButton" type="button">Sign out</button>
+            <p class="form-intro">Signed in as <strong id="authUserEmail"></strong>. Use Log out in the navigation to end your session.</p>
           </div>
           <p class="form-status" id="registrationStatus" role="status" aria-live="polite"></p>
           <button class="text-control" id="resendConfirmation" type="button" hidden>Resend confirmation email</button>
@@ -206,22 +206,23 @@
         <div>
           <span class="section-kicker">Community Q&A</span>
           <h2 class="mt-2 mb-4 text-4xl font-extrabold leading-tight text-[#183b2c]" id="forum-title">Ask. Listen. Build together.</h2>
-          <p class="max-w-lg leading-7 text-[#64736a]">Start a respectful conversation or upvote a question you would like the community to explore. Posts are saved in this browser only.</p>
-          <p class="sample-note">Forum content is user-submitted and is not moderated or shared with a server in this demo.</p>
+          <p class="max-w-lg leading-7 text-[#64736a]">Send a question to the Green Congress of Kenya team and receive a reply through your account.</p>
+          <p class="sample-note">Questions and replies are private to the person who asked and the administrator.</p>
         </div>
         <div>
           <form class="form-panel" id="forumForm" novalidate>
-            <h3>Post a question</h3>
-            <p class="form-intro">Share a topic for discussion with the community.</p>
+            <h3>Ask a question</h3>
+            <p class="form-intro">Sign in to send your question. Your question remains private to you and the administrator.</p>
             <div class="form-grid">
-              <div class="field full"><label for="forumName">Your name *</label><input class="field-input" id="forumName" name="name" type="text" minlength="2" required aria-describedby="forumNameError"><p class="field-error" id="forumNameError"></p></div>
+              <div class="field full"><label for="forumName">Your name *</label><input class="field-input" id="forumName" name="name" type="text" minlength="2" maxlength="100" required aria-describedby="forumNameError"><p class="field-error" id="forumNameError"></p></div>
               <div class="field full"><label for="forumTopic">Question / topic *</label><textarea class="field-textarea" id="forumTopic" name="topic" minlength="5" maxlength="500" required aria-describedby="forumTopicError"></textarea><p class="field-error" id="forumTopicError"></p></div>
               <div class="field full"><label for="forumCategory">Category *</label><select class="field-select" id="forumCategory" name="category" required><option value="">Choose a category</option><option>Environment</option><option>Peace & governance</option><option>Social justice</option><option>Youth & democracy</option><option>Other</option></select></div>
             </div>
-            <button class="button-primary mt-3 w-full" type="submit">Post to forum <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
+            <button class="button-primary mt-3 w-full" id="forumSubmit" type="submit">Send question <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
             <p class="form-status" id="forumStatus" role="status" aria-live="polite"></p>
+            <p class="forum-auth-prompt" id="forumAuthPrompt" hidden>To send your question, <a href="#register" id="forumLoginPrompt">log in</a> or <a href="#register" id="forumRegisterPrompt">create an account</a>.</p>
           </form>
-          <div class="mt-6 flex items-center justify-between gap-3"><h3 class="m-0 text-lg font-extrabold text-[#183b2c]">Recent questions</h3><span class="text-xs text-[#64736a]" id="forumCount">0 posts</span></div>
+          <div class="mt-6 flex items-center justify-between gap-3"><h3 class="m-0 text-lg font-extrabold text-[#183b2c]" id="forumListTitle">Your questions</h3><span class="text-xs text-[#64736a]" id="forumCount">0 questions</span></div>
           <div class="forum-list" id="forumList" aria-live="polite"></div>
         </div>
       </div>
