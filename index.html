@@ -25,15 +25,11 @@
       </a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="navPanel"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
       <nav class="nav-panel" id="navPanel" aria-label="Main navigation">
-        <a class="nav-link" href="#home">Home</a>
         <a class="nav-link" href="#pillars">About & Pillars</a>
-        <a class="nav-link" href="#news">News</a>
         <a class="nav-link" href="#media">Media</a>
-        <a class="nav-link" href="#forum">Forum</a>
-        <a class="nav-link admin-messages-nav-link" id="adminMessagesNavLink" href="#forum" hidden>
+        <a class="nav-link admin-messages-nav-link" id="adminMessagesNavLink" href="#adminMessages" hidden>
           Messages <span class="unread-count" id="adminNavUnreadCount" aria-label="0 unread messages" aria-live="polite">0</span>
         </a>
-        <a class="nav-link" href="#contact">Contact</a>
         <a class="nav-link" id="loginNavLink" href="#register">Log in</a>
         <button class="nav-link nav-action" id="navLogoutButton" type="button" hidden>Log out</button>
         <a class="button-primary" href="#register"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Join / Register</a>
@@ -240,16 +236,16 @@
       </div>
     </section>
 
-    <section class="contact-section" id="contact" aria-labelledby="contact-title">
-      <div class="contact-inner">
-        <div><h2 id="contact-title">Green Congress of Kenya</h2><p>Contact details and official channels can be added here.</p></div>
-        <a class="button-outline" href="#register">Join the conversation <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-      </div>
-    </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner"><span class="footer-brand">GCK · People & Planet</span><span>Green Congress of Kenya · gck.or.ke</span><span>© <span id="currentYear"></span> Green Congress of Kenya</span></div>
+  <footer class="site-footer" id="contact">
+    <div class="footer-inner">
+      <span class="footer-brand">GCK · People & Planet</span>
+      <span>Green Congress of Kenya · gck.or.ke</span>
+      <span>Contact details and official channels can be added here.</span>
+      <a class="footer-contact-link" href="#register">Join the conversation <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      <span>© <span id="currentYear"></span> Green Congress of Kenya</span>
+    </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"><p id="toastMessage"></p></div>
 
