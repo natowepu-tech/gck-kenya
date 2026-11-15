@@ -105,6 +105,8 @@ a { color: inherit; text-decoration: none; }
 .form-panel { padding: clamp(1.25rem, 3vw, 2rem); background: #f0f4ee; }
 .form-panel h3 { margin: 0 0 .45rem; color: var(--forest); font-size: 1.35rem; }
 .form-intro { margin: 0 0 1.5rem; color: var(--muted); font-size: .88rem; line-height: 1.6; }
+.auth-mode-switch { margin: 0 0 1rem; }
+.button-primary:disabled { cursor: wait; opacity: .7; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
 .field { min-width: 0; }
 .field.full { grid-column: 1 / -1; }

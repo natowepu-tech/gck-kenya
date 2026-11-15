@@ -24,6 +24,12 @@
       return false;
     }
   };
+  const supabaseClient = window.supabase && typeof window.supabase.createClient === "function"
+    ? window.supabase.createClient(
+      "https://gaxryrslkfhaopqwayrv.supabase.co",
+      "sb_publishable_cKWyCmyOlXSHBmsMgl8-fA_v1zp-a0Y"
+    )
+    : null;
 
   const menuToggle = $("#menuToggle");
   const navPanel = $("#navPanel");
@@ -131,10 +137,15 @@
   renderNews();
 
   const registrationForm = $("#registrationForm");
-  const registrationFields = ["memberName", "memberEmail", "memberPhone", "memberLocation"];
+  const authModeSwitch = $("#authModeSwitch");
+  const registrationStatus = $("#registrationStatus");
+  const registrationSubmit = $("#registrationSubmit");
+  const authFields = ["memberName", "memberEmail", "memberPassword", "memberPhone", "memberLocation"];
+  let authMode = "signup";
   const errorText = (field) => {
     if (field.validity.valueMissing) return "This field is required.";
     if (field.validity.typeMismatch) return "Enter a valid email address.";
+    if (field.validity.tooShort && field.id === "memberPassword") return "Password must be at least 8 characters.";
     if (field.validity.tooShort) return `Enter at least ${field.minLength} characters.`;
     if (field.id === "memberPhone") return "Enter a valid mobile number.";
     return "Please check this field.";
@@ -148,53 +159,145 @@
     if (error) error.textContent = valid ? "" : errorText(field);
     return valid;
   }
-  registrationFields.forEach((id) => {
+  function setAuthMode(mode) {
+    authMode = mode;
+    const isSignup = mode === "signup";
+    ["memberNameField", "memberPhoneField", "memberLocationField", "memberYouthField"].forEach((id) => {
+      $(`#${id}`).hidden = !isSignup;
+    });
+    $("#memberConsent").hidden = !isSignup;
+    $("#memberPassword").autocomplete = isSignup ? "new-password" : "current-password";
+    $$("[data-auth-mode]", authModeSwitch).forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.authMode === mode));
+    });
+    registrationSubmit.innerHTML = isSignup
+      ? 'Create account <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'
+      : 'Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
+    registrationStatus.textContent = "";
+    authFields.forEach((id) => {
+      const field = $(`#${id}`);
+      field.removeAttribute("aria-invalid");
+      $(`#${id}Error`).textContent = "";
+    });
+  }
+  authModeSwitch.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-auth-mode]");
+    if (button) setAuthMode(button.dataset.authMode);
+  });
+  authFields.forEach((id) => {
     const field = $(`#${id}`);
     field.addEventListener("blur", () => validateField(field));
     field.addEventListener("input", () => {
       if (field.getAttribute("aria-invalid") === "true") validateField(field);
     });
   });
-  $("#verifyPhone").addEventListener("click", () => {
-    const phone = $("#memberPhone");
-    if (!validateField(phone)) {
-      phone.focus();
-      return;
+  function showAuthSession(session) {
+    const isSignedIn = Boolean(session);
+    registrationForm.hidden = isSignedIn;
+    authModeSwitch.hidden = isSignedIn;
+    $("#authSession").hidden = !isSignedIn;
+    $("#authUserEmail").textContent = session?.user?.email || "";
+  }
+  $("#signOutButton").addEventListener("click", async () => {
+    const signOutButton = $("#signOutButton");
+    signOutButton.disabled = true;
+    try {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) {
+        registrationStatus.textContent = `Unable to sign out: ${error.message}`;
+        return;
+      }
+      registrationStatus.textContent = "You have signed out.";
+    } catch (error) {
+      console.error("Supabase sign-out failed.", error);
+      registrationStatus.textContent = "Unable to reach the authentication service. Please try again.";
+    } finally {
+      signOutButton.disabled = false;
     }
-    const detail = { phone: phone.value.trim(), demo: true };
-    // Replace this event handler with an approved SMS gateway request in production.
-    document.dispatchEvent(new CustomEvent("gck:sms-verification-requested", { detail }));
-    $("#smsStatus").textContent = "Demo only: no SMS was sent.";
-    announce("SMS verification is a placeholder. No message was sent.");
   });
-  registrationForm.addEventListener("submit", (event) => {
+  if (supabaseClient) {
+    supabaseClient.auth.onAuthStateChange((_event, session) => showAuthSession(session));
+    supabaseClient.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        registrationStatus.textContent = `Unable to check your sign-in status: ${error.message}`;
+        return;
+      }
+      showAuthSession(data.session);
+    }).catch((error) => {
+      console.error("Supabase session check failed.", error);
+      registrationStatus.textContent = "Unable to reach the authentication service. Please reload the page.";
+    });
+  } else {
+    registrationStatus.textContent = "Authentication could not load. Check your connection and reload the page.";
+  }
+  registrationForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const isValid = registrationFields.map((id) => validateField($(`#${id}`))).every(Boolean);
+    const fieldIds = authMode === "signup"
+      ? ["memberName", "memberEmail", "memberPassword", "memberPhone", "memberLocation"]
+      : ["memberEmail", "memberPassword"];
+    const isValid = fieldIds.map((id) => validateField($(`#${id}`))).every(Boolean);
     if (!isValid) {
       $(`[aria-invalid="true"]`, registrationForm)?.focus();
-      $("#registrationStatus").textContent = "Please correct the highlighted fields.";
       return;
     }
-    const member = {
-      name: $("#memberName").value.trim(),
-      email: $("#memberEmail").value.trim(),
-      phone: $("#memberPhone").value.trim(),
-      location: $("#memberLocation").value.trim(),
-      youthRepresentative: $("#memberYouth").checked,
-      submittedAt: new Date().toISOString()
-    };
-    const members = readStorage("gck:members", []);
-    members.push(member);
-    const stored = writeStorage("gck:members", members);
-    // Replace local storage with a secure, consent-aware membership API before launch.
-    document.dispatchEvent(new CustomEvent("gck:member-registered", { detail: member }));
-    registrationForm.reset();
-    registrationFields.forEach((id) => $(`#${id}`).removeAttribute("aria-invalid"));
-    registrationFields.forEach((id) => { const error = $(`#${id}Error`); if (error) error.textContent = ""; });
-    $("#smsStatus").textContent = "Demo placeholder only";
-    const message = stored ? "Thank you. Your demo registration is saved in this browser." : "Thank you. Registration was received for this session, but browser storage is unavailable.";
-    $("#registrationStatus").textContent = message;
-    announce(message);
+    if (!supabaseClient) {
+      registrationStatus.textContent = "Authentication is unavailable. Check your connection and reload the page.";
+      return;
+    }
+    registrationSubmit.disabled = true;
+    registrationSubmit.textContent = authMode === "signup" ? "Creating account..." : "Signing in...";
+    try {
+      if (authMode === "signup") {
+        const member = {
+          full_name: $("#memberName").value.trim(),
+          phone: $("#memberPhone").value.trim(),
+          county_constituency: $("#memberLocation").value.trim(),
+          youth_representative: $("#memberYouth").checked
+        };
+        const { data, error } = await supabaseClient.auth.signUp({
+          email: $("#memberEmail").value.trim(),
+          password: $("#memberPassword").value,
+          options: {
+            data: member,
+            emailRedirectTo: `${window.location.origin}${window.location.pathname}#register`
+          }
+        });
+        if (error) {
+          registrationStatus.textContent = `Unable to create your account: ${error.message}`;
+          return;
+        }
+        document.dispatchEvent(new CustomEvent("gck:member-registered", { detail: member }));
+        const email = $("#memberEmail").value.trim();
+        registrationForm.reset();
+        $("#memberEmail").value = email;
+        const message = data.session
+          ? "Your account has been created and you are signed in."
+          : "Account created. Check your email for a confirmation link before signing in.";
+        registrationStatus.textContent = message;
+        announce(message);
+        if (data.session) showAuthSession(data.session);
+      } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: $("#memberEmail").value.trim(),
+          password: $("#memberPassword").value
+        });
+        if (error) {
+          registrationStatus.textContent = `Unable to sign in: ${error.message}`;
+          return;
+        }
+        registrationStatus.textContent = "You are signed in.";
+        showAuthSession(data.session);
+        announce("You are signed in.");
+      }
+    } catch (error) {
+      console.error("Supabase authentication request failed.", error);
+      registrationStatus.textContent = "Unable to reach the authentication service. Please try again.";
+    } finally {
+      registrationSubmit.disabled = false;
+      registrationSubmit.innerHTML = authMode === "signup"
+        ? 'Create account <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'
+        : 'Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
+    }
   });
 
   const forumKey = "gck:forum-posts";

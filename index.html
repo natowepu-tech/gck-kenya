@@ -165,29 +165,36 @@
         <div>
           <span class="section-kicker">Take part</span>
           <h2 class="mt-2 mb-4 text-4xl font-extrabold leading-tight text-[#183b2c]" id="register-title">Be part of the conversation.</h2>
-          <p class="max-w-lg leading-7 text-[#64736a]">Register your interest in joining GCK. This demo stores submissions only in this browser; it does not transmit data to a server.</p>
+          <p class="max-w-lg leading-7 text-[#64736a]">Create an account with your email address to register your interest in joining GCK. Your membership details are saved to your Supabase account.</p>
           <div class="mt-8 border-l-2 border-[#f5b52e] pl-5">
             <p class="m-0 text-sm font-bold text-[#183b2c]">Local participation. Shared purpose.</p>
             <p class="mt-2 text-sm leading-6 text-[#64736a]">Use the registration form or share a question with the community forum.</p>
           </div>
         </div>
         <div class="form-panel">
-          <h3>Member registration</h3>
-          <p class="form-intro">Fields marked required must be completed. SMS verification is a non-sending demo placeholder.</p>
+          <h3>Join Green Congress of Kenya</h3>
+          <p class="form-intro">Create an account or sign in with your email address. Passwords must be at least 8 characters.</p>
+          <div class="toolbar auth-mode-switch" id="authModeSwitch" role="group" aria-label="Choose account action">
+            <button class="filter-button" type="button" data-auth-mode="signup" aria-pressed="true">Become a member</button>
+            <button class="filter-button" type="button" data-auth-mode="signin" aria-pressed="false">Sign in</button>
+          </div>
           <form id="registrationForm" novalidate>
             <div class="form-grid">
-              <div class="field full"><label for="memberName">Full name *</label><input class="field-input" id="memberName" name="name" type="text" autocomplete="name" minlength="2" required aria-describedby="memberNameError"><p class="field-error" id="memberNameError"></p></div>
-              <div class="field"><label for="memberEmail">Email address *</label><input class="field-input" id="memberEmail" name="email" type="email" autocomplete="email" required aria-describedby="memberEmailError"><p class="field-error" id="memberEmailError"></p></div>
-              <div class="field"><label for="memberPhone">Mobile phone number *</label><input class="field-input" id="memberPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="memberPhoneError"><p class="field-error" id="memberPhoneError"></p>
-                <div class="verify-row"><button id="verifyPhone" type="button"><i class="fa-solid fa-comment-sms" aria-hidden="true"></i> Request SMS code</button><span class="verify-note" id="smsStatus">Demo placeholder only</span></div>
-              </div>
-              <div class="field full"><label for="memberLocation">County / Constituency *</label><input class="field-input" id="memberLocation" name="location" type="text" autocomplete="address-level1" required aria-describedby="memberLocationError"><p class="field-error" id="memberLocationError"></p></div>
-              <div class="field full"><label class="check-row" for="memberYouth"><input id="memberYouth" name="youthRepresentative" type="checkbox"><span>I am a youth representative, Gen Z member, or student.</span></label></div>
+              <div class="field full" id="memberNameField"><label for="memberName">Full name *</label><input class="field-input" id="memberName" name="name" type="text" autocomplete="name" minlength="2" required aria-describedby="memberNameError"><p class="field-error" id="memberNameError"></p></div>
+              <div class="field full"><label for="memberEmail">Email address *</label><input class="field-input" id="memberEmail" name="email" type="email" autocomplete="email" required aria-describedby="memberEmailError"><p class="field-error" id="memberEmailError"></p></div>
+              <div class="field full"><label for="memberPassword">Password *</label><input class="field-input" id="memberPassword" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="memberPasswordError"><p class="field-error" id="memberPasswordError"></p></div>
+              <div class="field full" id="memberPhoneField"><label for="memberPhone">Mobile phone number *</label><input class="field-input" id="memberPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="memberPhoneError"><p class="field-error" id="memberPhoneError"></p></div>
+              <div class="field full" id="memberLocationField"><label for="memberLocation">County / Constituency *</label><input class="field-input" id="memberLocation" name="location" type="text" autocomplete="address-level1" required aria-describedby="memberLocationError"><p class="field-error" id="memberLocationError"></p></div>
+              <div class="field full" id="memberYouthField"><label class="check-row" for="memberYouth"><input id="memberYouth" name="youthRepresentative" type="checkbox"><span>I am a youth representative, Gen Z member, or student.</span></label></div>
             </div>
-            <p class="consent-note">Submitting indicates your interest in being contacted about GCK membership. Connect an approved privacy notice and consent process before production use.</p>
-            <button class="button-primary w-full" type="submit">Submit registration <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
-            <p class="form-status" id="registrationStatus" role="status" aria-live="polite"></p>
+            <p class="consent-note" id="memberConsent">Submitting creates a GCK account and stores your membership details in its account metadata.</p>
+            <button class="button-primary w-full" id="registrationSubmit" type="submit">Create account <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
           </form>
+          <div class="auth-session" id="authSession" hidden>
+            <p class="form-intro">Signed in as <strong id="authUserEmail"></strong>.</p>
+            <button class="button-primary" id="signOutButton" type="button">Sign out</button>
+          </div>
+          <p class="form-status" id="registrationStatus" role="status" aria-live="polite"></p>
         </div>
       </div>
     </section>
@@ -231,6 +238,7 @@
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"><p id="toastMessage"></p></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>
 </html>
