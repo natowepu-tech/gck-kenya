@@ -131,6 +131,7 @@
   let currentSession = null;
   let forumInitialized = false;
   let forumLoadVersion = 0;
+  let forumSchemaMigrationRequired = false;
   let forumAuthPromptRequested = false;
   let adminMessages = [];
   let adminMessageRefreshTimer = null;
@@ -199,6 +200,7 @@
     $("#loginNavLink").hidden = isSignedIn;
     $("#navLogoutButton").hidden = !isSignedIn;
     $("#adminMessages").hidden = !isForumAdmin();
+    $("#adminMessagesNavLink").hidden = !isForumAdmin();
     if (isSignedIn) forumAuthPromptRequested = false;
     $("#forumAuthPrompt").hidden = isSignedIn || !forumAuthPromptRequested;
     if (forumInitialized) {
@@ -398,6 +400,16 @@
       list.append(article);
     });
   }
+  function renderForumLoadError(message) {
+    const list = $("#forumList");
+    list.replaceChildren();
+    $("#forumListTitle").textContent = "Your questions";
+    $("#forumCount").textContent = "Unavailable";
+    const error = document.createElement("div");
+    error.className = "forum-empty";
+    error.textContent = message;
+    list.append(error);
+  }
   function createAdminReplyForm(question) {
     const replyForm = document.createElement("form");
     replyForm.className = "admin-reply-form";
@@ -448,9 +460,7 @@
   function renderAdminMessages(messages) {
     adminMessages = messages;
     const unreadCount = messages.filter((message) => !message.admin_read_at).length;
-    const unreadBadge = $("#adminUnreadCount");
-    unreadBadge.textContent = String(unreadCount);
-    unreadBadge.setAttribute("aria-label", `${unreadCount} unread messages`);
+    setAdminUnreadCount(String(unreadCount), `${unreadCount} unread messages`);
     const list = $("#adminMessagesList");
     list.replaceChildren();
     if (!messages.length) {
@@ -541,15 +551,20 @@
       list.append(article);
     });
   }
+  function setAdminUnreadCount(value, label) {
+    ["#adminUnreadCount", "#adminNavUnreadCount"].forEach((selector) => {
+      const badge = $(selector);
+      badge.textContent = value;
+      badge.setAttribute("aria-label", label);
+    });
+  }
   function showAdminMessageLoadError(message) {
     if (!isForumAdmin()) {
       renderAdminMessages([]);
       return;
     }
     if (!adminMessages.length) {
-      const unreadBadge = $("#adminUnreadCount");
-      unreadBadge.textContent = "!";
-      unreadBadge.setAttribute("aria-label", "Unread message count unavailable");
+      setAdminUnreadCount("!", "Unread message count unavailable");
     }
     const list = $("#adminMessagesList");
     list.replaceChildren();
@@ -569,7 +584,16 @@
     if (!supabaseClient) {
       forumStatus.textContent = "The question service is unavailable. Please reload the page.";
       showAdminMessageLoadError("Unable to load messages. Please reload the page.");
-      renderForumQuestions([]);
+      renderForumLoadError("Unable to load your questions. Please reload the page.");
+      return;
+    }
+    if (forumSchemaMigrationRequired) {
+      const message = isForumAdmin()
+        ? "Apply supabase/migrations/20261115000200_track_admin_message_reads.sql in Supabase, then reload."
+        : "The question service needs a database update. Please try again later.";
+      forumStatus.textContent = message;
+      showAdminMessageLoadError(message);
+      renderForumLoadError(message);
       return;
     }
     $("#forumCount").textContent = "Loading...";
@@ -580,9 +604,20 @@
         .order("created_at", { ascending: false });
       if (loadVersion !== forumLoadVersion) return;
       if (error) {
+        if (error.code === "42703" && error.message?.includes("admin_read_at")) {
+          forumSchemaMigrationRequired = true;
+          const message = isForumAdmin()
+            ? "Apply supabase/migrations/20261115000200_track_admin_message_reads.sql in Supabase, then reload."
+            : "The question service needs a database update. Please try again later.";
+          forumStatus.textContent = message;
+          showAdminMessageLoadError(message);
+          renderForumLoadError(message);
+          syncAdminMessageRefresh();
+          return;
+        }
         forumStatus.textContent = `Unable to load questions: ${error.message}`;
         showAdminMessageLoadError("Unable to load messages. Please try again.");
-        renderForumQuestions([]);
+        renderForumLoadError("Unable to load your questions. Please try again.");
         return;
       }
       const questions = data || [];
@@ -598,11 +633,11 @@
       console.error("Loading questions failed.", error);
       forumStatus.textContent = "Unable to reach the question service. Please try again.";
       showAdminMessageLoadError("Unable to load messages. Please try again.");
-      renderForumQuestions([]);
+      renderForumLoadError("Unable to load your questions. Please try again.");
     }
   }
   function syncAdminMessageRefresh() {
-    if (forumInitialized && isForumAdmin()) {
+    if (forumInitialized && isForumAdmin() && !forumSchemaMigrationRequired) {
       if (!adminMessageRefreshTimer) {
         adminMessageRefreshTimer = window.setInterval(loadForumQuestions, 30000);
       }
@@ -620,6 +655,11 @@
     button.setAttribute("aria-expanded", String(!isExpanded));
     panel.hidden = isExpanded;
     if (!isExpanded) loadForumQuestions();
+  });
+  $("#adminMessagesNavLink").addEventListener("click", () => {
+    $("#adminMessagesPanel").hidden = false;
+    $("#adminMessagesTab").setAttribute("aria-expanded", "true");
+    loadForumQuestions();
   });
   $("#forumLoginPrompt").addEventListener("click", () => setAuthMode("signin"));
   $("#forumRegisterPrompt").addEventListener("click", () => setAuthMode("signup"));
