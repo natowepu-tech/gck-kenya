@@ -44,9 +44,9 @@ a { color: inherit; text-decoration: none; }
 .hero-copy { max-width: 520px; color: #d9e3da; font-size: 1.02rem; line-height: 1.75; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
 .carousel-shell { position: relative; min-width: 0; }
-.carousel-frame { overflow: hidden; border: 1px solid rgba(255,255,255,.28); background: #e8eee6; box-shadow: 16px 16px 0 rgba(245,181,46,.16); }
-.carousel-track { display: flex; transition: transform .55s cubic-bezier(.2,.8,.2,1); }
-.carousel-slide { display: grid; min-width: 100%; min-height: 360px; place-items: center; padding: 2rem; color: var(--forest); background-color: #e6ede5; background-image: linear-gradient(135deg, rgba(24,59,44,.035) 25%, transparent 25%, transparent 50%, rgba(24,59,44,.035) 50%, rgba(24,59,44,.035) 75%, transparent 75%, transparent); background-size: 24px 24px; text-align: center; }
+.carousel-frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid rgba(255,255,255,.28); background: #e8eee6; box-shadow: 16px 16px 0 rgba(245,181,46,.16); }
+.carousel-track { position: absolute; inset: 0; display: flex; transition: transform .55s cubic-bezier(.2,.8,.2,1); }
+.carousel-slide { display: block; flex: 0 0 100%; width: 100%; height: 100%; min-width: 0; padding: 0; }
 .carousel-image { display: block; width: 100%; height: 100%; object-fit: cover; }
 .placeholder-inner { max-width: 300px; padding: 1.5rem; border: 1px dashed #6d9477; background: rgba(251,252,248,.74); }
 .placeholder-inner i { margin-bottom: .85rem; color: var(--leaf); font-size: 1.5rem; }
@@ -163,7 +163,6 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 900px) {
   .hero-inner { min-height: auto; grid-template-columns: 1fr; }
   .hero-copy-wrap { max-width: 720px; }
-  .carousel-slide { min-height: 330px; }
   .pillar-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .media-grid, .news-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .community-grid { grid-template-columns: 1fr; }
@@ -194,7 +193,6 @@ a { color: inherit; text-decoration: none; }
   .form-grid { grid-template-columns: 1fr; }
   .field.full { grid-column: auto; }
   .hero h1 { font-size: 2.55rem; }
-  .carousel-slide { min-height: 280px; padding: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
