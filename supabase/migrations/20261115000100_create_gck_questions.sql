@@ -11,6 +11,7 @@ create table if not exists public.gck_questions (
   admin_reply text check (
     admin_reply is null or char_length(btrim(admin_reply)) between 1 and 1000
   ),
+  admin_read_at timestamptz,
   created_at timestamptz not null default now(),
   replied_at timestamptz,
   constraint gck_questions_reply_timestamp_match check (
@@ -46,6 +47,7 @@ create policy "Authenticated users can submit their own questions"
     and lower(user_email) = lower(coalesce((select auth.jwt() ->> 'email'), ''))
     and admin_reply is null
     and replied_at is null
+    and admin_read_at is null
   );
 
 drop policy if exists "Only the administrator can answer questions" on public.gck_questions;

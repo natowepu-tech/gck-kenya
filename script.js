@@ -1,6 +1,7 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const ADMIN_EMAIL = "nato.nato@aol.com";
   const announce = (message) => {
     const toast = $("#toast");
     $("#toastMessage").textContent = message;
@@ -131,6 +132,12 @@
   let forumInitialized = false;
   let forumLoadVersion = 0;
   let forumAuthPromptRequested = false;
+  let adminMessages = [];
+  let adminMessageRefreshTimer = null;
+  const openAdminMessageIds = new Set();
+  function isForumAdmin() {
+    return currentSession?.user?.email?.toLowerCase() === ADMIN_EMAIL;
+  }
   const errorText = (field) => {
     if (field.validity.valueMissing) return "This field is required.";
     if (field.validity.typeMismatch) return "Enter a valid email address.";
@@ -191,9 +198,13 @@
     $("#authUserEmail").textContent = session?.user?.email || "";
     $("#loginNavLink").hidden = isSignedIn;
     $("#navLogoutButton").hidden = !isSignedIn;
+    $("#adminMessages").hidden = !isForumAdmin();
     if (isSignedIn) forumAuthPromptRequested = false;
     $("#forumAuthPrompt").hidden = isSignedIn || !forumAuthPromptRequested;
-    if (forumInitialized) loadForumQuestions();
+    if (forumInitialized) {
+      loadForumQuestions();
+      syncAdminMessageRefresh();
+    }
   }
   const navLogoutButton = $("#navLogoutButton");
   navLogoutButton.addEventListener("click", async () => {
@@ -343,11 +354,10 @@
   const forumStatus = $("#forumStatus");
   const forumAuthPrompt = $("#forumAuthPrompt");
   const forumSubmit = $("#forumSubmit");
-  const isForumAdmin = () => currentSession?.user?.email?.toLowerCase() === "nato.nato@aol.com";
   function renderForumQuestions(questions) {
     const list = $("#forumList");
     list.replaceChildren();
-    $("#forumListTitle").textContent = isForumAdmin() ? "Member questions" : "Your questions";
+    $("#forumListTitle").textContent = "Your questions";
     $("#forumCount").textContent = `${questions.length} ${questions.length === 1 ? "question" : "questions"}`;
     if (!questions.length) {
       const empty = document.createElement("div");
@@ -385,65 +395,180 @@
         reply.append(replyHeading, replyBody);
         article.append(reply);
       }
-      if (isForumAdmin()) {
-        const replyForm = document.createElement("form");
-        replyForm.className = "admin-reply-form";
-        const replyInput = document.createElement("textarea");
-        replyInput.className = "field-textarea";
-        replyInput.rows = 3;
-        replyInput.maxLength = 1000;
-        replyInput.required = true;
-        replyInput.setAttribute("aria-label", `Reply to ${question.user_name}'s question`);
-        replyInput.value = question.admin_reply || "";
-        const replyButton = document.createElement("button");
-        replyButton.className = "button-primary";
-        replyButton.type = "submit";
-        replyButton.textContent = question.admin_reply ? "Update reply" : "Send reply";
-        replyForm.append(replyInput, replyButton);
-        replyForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          const replyText = replyInput.value.trim();
-          if (!replyText) {
-            replyInput.focus();
-            forumStatus.textContent = "Enter a reply before sending.";
-            return;
-          }
-          replyButton.disabled = true;
+      list.append(article);
+    });
+  }
+  function createAdminReplyForm(question) {
+    const replyForm = document.createElement("form");
+    replyForm.className = "admin-reply-form";
+    const replyInput = document.createElement("textarea");
+    replyInput.className = "field-textarea";
+    replyInput.rows = 3;
+    replyInput.maxLength = 1000;
+    replyInput.required = true;
+    replyInput.setAttribute("aria-label", `Reply to ${question.user_name}'s question`);
+    replyInput.value = question.admin_reply || "";
+    const replyButton = document.createElement("button");
+    replyButton.className = "button-primary";
+    replyButton.type = "submit";
+    replyButton.textContent = question.admin_reply ? "Update reply" : "Send reply";
+    replyForm.append(replyInput, replyButton);
+    replyForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const replyText = replyInput.value.trim();
+      if (!replyText) {
+        replyInput.focus();
+        forumStatus.textContent = "Enter a reply before sending.";
+        return;
+      }
+      replyButton.disabled = true;
+      try {
+        const { error } = await supabaseClient
+          .from("gck_questions")
+          .update({ admin_reply: replyText, replied_at: new Date().toISOString() })
+          .eq("id", question.id)
+          .select("id")
+          .single();
+        if (error) {
+          forumStatus.textContent = `Unable to send the reply: ${error.message}`;
+          return;
+        }
+        forumStatus.textContent = "Your reply has been sent.";
+        announce("Your reply has been sent.");
+        await loadForumQuestions();
+      } catch (error) {
+        console.error("Question reply failed.", error);
+        forumStatus.textContent = "Unable to reach the question service. Please try again.";
+      } finally {
+        replyButton.disabled = false;
+      }
+    });
+    return replyForm;
+  }
+  function renderAdminMessages(messages) {
+    adminMessages = messages;
+    const unreadCount = messages.filter((message) => !message.admin_read_at).length;
+    const unreadBadge = $("#adminUnreadCount");
+    unreadBadge.textContent = String(unreadCount);
+    unreadBadge.setAttribute("aria-label", `${unreadCount} unread messages`);
+    const list = $("#adminMessagesList");
+    list.replaceChildren();
+    if (!messages.length) {
+      const empty = document.createElement("div");
+      empty.className = "forum-empty";
+      empty.textContent = "No messages yet.";
+      list.append(empty);
+      return;
+    }
+    messages.forEach((question) => {
+      const article = document.createElement("article");
+      article.className = "forum-post admin-message";
+      const head = document.createElement("div");
+      head.className = "forum-post-head";
+      const sender = document.createElement("span");
+      sender.textContent = `${question.user_name} · ${question.user_email}`;
+      const category = document.createElement("span");
+      category.className = "tag";
+      category.textContent = question.category;
+      head.append(sender, category);
+      const date = document.createElement("div");
+      date.className = "forum-post-head";
+      date.textContent = new Date(question.created_at).toLocaleString();
+      const isOpen = openAdminMessageIds.has(question.id);
+      const actions = document.createElement("div");
+      actions.className = "admin-message-actions";
+      if (!question.admin_read_at) {
+        const unread = document.createElement("span");
+        unread.className = "tag message-unread";
+        unread.textContent = "Unread";
+        actions.append(unread);
+      }
+      const openButton = document.createElement("button");
+      openButton.className = "filter-button";
+      openButton.type = "button";
+      openButton.textContent = isOpen ? "Close message" : "Open message";
+      openButton.setAttribute("aria-expanded", String(isOpen));
+      openButton.addEventListener("click", async () => {
+        if (openAdminMessageIds.has(question.id)) {
+          openAdminMessageIds.delete(question.id);
+          renderAdminMessages(adminMessages);
+          return;
+        }
+        openAdminMessageIds.add(question.id);
+        if (!question.admin_read_at) {
+          openButton.disabled = true;
           try {
+            const readAt = new Date().toISOString();
             const { error } = await supabaseClient
               .from("gck_questions")
-              .update({ admin_reply: replyText, replied_at: new Date().toISOString() })
+              .update({ admin_read_at: readAt })
               .eq("id", question.id)
-              .select("id")
-              .single();
+              .is("admin_read_at", null);
             if (error) {
-              forumStatus.textContent = `Unable to send the reply: ${error.message}`;
-              return;
+              forumStatus.textContent = `Unable to mark the message as read: ${error.message}`;
+              openAdminMessageIds.delete(question.id);
+            } else {
+              adminMessages = adminMessages.map((message) => (
+                message.id === question.id ? { ...message, admin_read_at: readAt } : message
+              ));
             }
-            forumStatus.textContent = "Your reply has been sent.";
-            announce("Your reply has been sent.");
-            await loadForumQuestions();
           } catch (error) {
-            console.error("Question reply failed.", error);
-            forumStatus.textContent = "Unable to reach the question service. Please try again.";
-          } finally {
-            replyButton.disabled = false;
+            console.error("Marking message read failed.", error);
+            forumStatus.textContent = "Unable to reach the message service. Please try again.";
+            openAdminMessageIds.delete(question.id);
           }
-        });
-        article.append(replyForm);
+        }
+        renderAdminMessages(adminMessages);
+      });
+      actions.append(openButton);
+      article.append(head, date, actions);
+      if (isOpen) {
+        const message = document.createElement("p");
+        message.textContent = question.question;
+        article.append(message);
+        if (question.admin_reply) {
+          const reply = document.createElement("div");
+          reply.className = "forum-reply";
+          const replyHeading = document.createElement("strong");
+          replyHeading.textContent = "Administrator reply";
+          const replyBody = document.createElement("p");
+          replyBody.textContent = question.admin_reply;
+          reply.append(replyHeading, replyBody);
+          article.append(reply);
+        }
+        article.append(createAdminReplyForm(question));
       }
       list.append(article);
     });
+  }
+  function showAdminMessageLoadError(message) {
+    if (!isForumAdmin()) {
+      renderAdminMessages([]);
+      return;
+    }
+    if (!adminMessages.length) {
+      const unreadBadge = $("#adminUnreadCount");
+      unreadBadge.textContent = "!";
+      unreadBadge.setAttribute("aria-label", "Unread message count unavailable");
+    }
+    const list = $("#adminMessagesList");
+    list.replaceChildren();
+    const error = document.createElement("div");
+    error.className = "forum-empty";
+    error.textContent = message;
+    list.append(error);
   }
   async function loadForumQuestions() {
     const loadVersion = ++forumLoadVersion;
     if (!currentSession) {
       forumStatus.textContent = "";
+      renderAdminMessages([]);
       renderForumQuestions([]);
       return;
     }
     if (!supabaseClient) {
       forumStatus.textContent = "The question service is unavailable. Please reload the page.";
+      showAdminMessageLoadError("Unable to load messages. Please reload the page.");
       renderForumQuestions([]);
       return;
     }
@@ -451,22 +576,51 @@
     try {
       const { data, error } = await supabaseClient
         .from("gck_questions")
-        .select("id, user_id, user_email, user_name, category, question, admin_reply, created_at, replied_at")
+        .select("id, user_id, user_email, user_name, category, question, admin_reply, admin_read_at, created_at, replied_at")
         .order("created_at", { ascending: false });
       if (loadVersion !== forumLoadVersion) return;
       if (error) {
         forumStatus.textContent = `Unable to load questions: ${error.message}`;
+        showAdminMessageLoadError("Unable to load messages. Please try again.");
         renderForumQuestions([]);
         return;
       }
-      renderForumQuestions(data || []);
+      const questions = data || [];
+      if (isForumAdmin()) {
+        renderAdminMessages(questions.filter((question) => question.user_id !== currentSession.user.id));
+        renderForumQuestions(questions.filter((question) => question.user_id === currentSession.user.id));
+      } else {
+        renderAdminMessages([]);
+        renderForumQuestions(questions);
+      }
     } catch (error) {
       if (loadVersion !== forumLoadVersion) return;
       console.error("Loading questions failed.", error);
       forumStatus.textContent = "Unable to reach the question service. Please try again.";
+      showAdminMessageLoadError("Unable to load messages. Please try again.");
       renderForumQuestions([]);
     }
   }
+  function syncAdminMessageRefresh() {
+    if (forumInitialized && isForumAdmin()) {
+      if (!adminMessageRefreshTimer) {
+        adminMessageRefreshTimer = window.setInterval(loadForumQuestions, 30000);
+      }
+      return;
+    }
+    if (adminMessageRefreshTimer) {
+      window.clearInterval(adminMessageRefreshTimer);
+      adminMessageRefreshTimer = null;
+    }
+  }
+  $("#adminMessagesTab").addEventListener("click", () => {
+    const button = $("#adminMessagesTab");
+    const panel = $("#adminMessagesPanel");
+    const isExpanded = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!isExpanded));
+    panel.hidden = isExpanded;
+    if (!isExpanded) loadForumQuestions();
+  });
   $("#forumLoginPrompt").addEventListener("click", () => setAuthMode("signin"));
   $("#forumRegisterPrompt").addEventListener("click", () => setAuthMode("signup"));
   forumForm.addEventListener("submit", async (event) => {
@@ -539,5 +693,6 @@
   });
   forumInitialized = true;
   loadForumQuestions();
+  syncAdminMessageRefresh();
   $("#currentYear").textContent = new Date().getFullYear();
 })();

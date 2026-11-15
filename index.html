@@ -222,6 +222,15 @@
             <p class="form-status" id="forumStatus" role="status" aria-live="polite"></p>
             <p class="forum-auth-prompt" id="forumAuthPrompt" hidden>To send your question, <a href="#register" id="forumLoginPrompt">log in</a> or <a href="#register" id="forumRegisterPrompt">create an account</a>.</p>
           </form>
+            <div class="admin-messages" id="adminMessages" hidden>
+              <button class="filter-button admin-messages-tab" id="adminMessagesTab" type="button" aria-expanded="false" aria-controls="adminMessagesPanel">
+                Messages <span class="unread-count" id="adminUnreadCount" aria-label="Unread messages" aria-live="polite">0</span>
+              </button>
+              <div class="admin-messages-panel" id="adminMessagesPanel" hidden>
+                <p class="form-intro">Open a message to mark it as read and reply.</p>
+                <div class="forum-list" id="adminMessagesList" aria-live="polite"></div>
+              </div>
+            </div>
           <div class="mt-6 flex items-center justify-between gap-3"><h3 class="m-0 text-lg font-extrabold text-[#183b2c]" id="forumListTitle">Your questions</h3><span class="text-xs text-[#64736a]" id="forumCount">0 questions</span></div>
           <div class="forum-list" id="forumList" aria-live="polite"></div>
         </div>
