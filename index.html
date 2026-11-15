@@ -31,6 +31,7 @@
         <a class="nav-link" href="#media">Media</a>
         <a class="nav-link" href="#forum">Forum</a>
         <a class="nav-link" href="#contact">Contact</a>
+        <a class="nav-link" id="loginNavLink" href="#register">Log in</a>
         <a class="button-primary" href="#register"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Join / Register</a>
       </nav>
     </div>
@@ -173,10 +174,10 @@
         </div>
         <div class="form-panel">
           <h3>Join Green Congress of Kenya</h3>
-          <p class="form-intro">Create an account or sign in with your email address. Passwords must be at least 8 characters.</p>
+          <p class="form-intro">Create an account or log in with your email address. Passwords must be at least 8 characters.</p>
           <div class="toolbar auth-mode-switch" id="authModeSwitch" role="group" aria-label="Choose account action">
             <button class="filter-button" type="button" data-auth-mode="signup" aria-pressed="true">Become a member</button>
-            <button class="filter-button" type="button" data-auth-mode="signin" aria-pressed="false">Sign in</button>
+            <button class="filter-button" type="button" data-auth-mode="signin" aria-pressed="false">Log in</button>
           </div>
           <form id="registrationForm" novalidate>
             <div class="form-grid">
@@ -195,6 +196,7 @@
             <button class="button-primary" id="signOutButton" type="button">Sign out</button>
           </div>
           <p class="form-status" id="registrationStatus" role="status" aria-live="polite"></p>
+          <button class="text-control" id="resendConfirmation" type="button" hidden>Resend confirmation email</button>
         </div>
       </div>
     </section>

@@ -140,6 +140,7 @@
   const authModeSwitch = $("#authModeSwitch");
   const registrationStatus = $("#registrationStatus");
   const registrationSubmit = $("#registrationSubmit");
+  const resendConfirmationButton = $("#resendConfirmation");
   const authFields = ["memberName", "memberEmail", "memberPassword", "memberPhone", "memberLocation"];
   let authMode = "signup";
   const errorText = (field) => {
@@ -172,8 +173,9 @@
     });
     registrationSubmit.innerHTML = isSignup
       ? 'Create account <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'
-      : 'Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
+      : 'Log in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
     registrationStatus.textContent = "";
+    resendConfirmationButton.hidden = true;
     authFields.forEach((id) => {
       const field = $(`#${id}`);
       field.removeAttribute("aria-invalid");
@@ -184,6 +186,7 @@
     const button = event.target.closest("[data-auth-mode]");
     if (button) setAuthMode(button.dataset.authMode);
   });
+  $("#loginNavLink").addEventListener("click", () => setAuthMode("signin"));
   authFields.forEach((id) => {
     const field = $(`#${id}`);
     field.addEventListener("blur", () => validateField(field));
@@ -213,6 +216,34 @@
       registrationStatus.textContent = "Unable to reach the authentication service. Please try again.";
     } finally {
       signOutButton.disabled = false;
+    }
+  });
+  resendConfirmationButton.addEventListener("click", async () => {
+    const emailField = $("#memberEmail");
+    if (!validateField(emailField)) {
+      emailField.focus();
+      return;
+    }
+    resendConfirmationButton.disabled = true;
+    registrationStatus.textContent = "Sending a confirmation email...";
+    try {
+      const { error } = await supabaseClient.auth.resend({
+        type: "signup",
+        email: emailField.value.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}${window.location.pathname}#register`
+        }
+      });
+      if (error) {
+        registrationStatus.textContent = `Unable to resend the confirmation email: ${error.message}`;
+        return;
+      }
+      registrationStatus.textContent = "If this address needs confirmation, a new email has been sent.";
+    } catch (error) {
+      console.error("Supabase confirmation resend failed.", error);
+      registrationStatus.textContent = "Unable to reach the authentication service. Please try again.";
+    } finally {
+      resendConfirmationButton.disabled = false;
     }
   });
   if (supabaseClient) {
@@ -245,7 +276,7 @@
       return;
     }
     registrationSubmit.disabled = true;
-    registrationSubmit.textContent = authMode === "signup" ? "Creating account..." : "Signing in...";
+    registrationSubmit.textContent = authMode === "signup" ? "Creating account..." : "Logging in...";
     try {
       if (authMode === "signup") {
         const member = {
@@ -282,7 +313,17 @@
           password: $("#memberPassword").value
         });
         if (error) {
-          registrationStatus.textContent = `Unable to sign in: ${error.message}`;
+          const errorMessage = error.message.toLowerCase();
+          const emailNeedsConfirmation = error.code === "email_not_confirmed"
+            || errorMessage.includes("email not confirmed");
+          if (emailNeedsConfirmation) {
+            registrationStatus.textContent = "Confirm your email using the link we sent, or request a new confirmation email below.";
+            resendConfirmationButton.hidden = false;
+          } else if (error.code === "invalid_credentials" || errorMessage.includes("invalid login credentials")) {
+            registrationStatus.textContent = "Email or password is incorrect. Check both and confirm your email before signing in.";
+          } else {
+            registrationStatus.textContent = `Unable to sign in: ${error.message}`;
+          }
           return;
         }
         registrationStatus.textContent = "You are signed in.";
@@ -296,7 +337,7 @@
       registrationSubmit.disabled = false;
       registrationSubmit.innerHTML = authMode === "signup"
         ? 'Create account <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'
-        : 'Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
+        : 'Log in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
     }
   });
 
