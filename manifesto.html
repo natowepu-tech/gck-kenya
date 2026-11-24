@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#183b2c">
-  <meta name="description" content="The Green Congress of Kenya 2027 manifesto.">
-  <title>2027 Manifesto | Green Congress of Kenya</title>
+  <meta name="description" content="The 2026 Green Party Manifesto from the Green Congress of Kenya.">
+  <title>2026 Green Party Manifesto | Green Congress of Kenya</title>
   <link rel="icon" type="image/svg+xml" href="images/gck-favicon.svg">
   <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,6 +22,14 @@
           <span class="brand-subtitle block text-xs font-semibold tracking-widest text-[#64736a]">GCK · PEOPLE & PLANET</span>
         </span>
       </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="navPanel"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+      <nav class="nav-panel" id="navPanel" aria-label="Main navigation">
+        <a class="nav-link" href="index.html#home">Home</a>
+        <a class="nav-link" href="index.html#pillars">About & Pillars</a>
+        <a class="nav-link" href="index.html#media">Media</a>
+        <a class="nav-link" href="index.html#register">Log in</a>
+        <a class="button-primary" href="index.html#register"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Join / Register</a>
+      </nav>
     </div>
   </header>
 
@@ -28,12 +37,18 @@
     <section class="section manifesto-page-section" aria-labelledby="manifesto-title">
       <div class="section-inner">
         <div class="manifesto-page-content">
-          <span class="section-kicker">2027 Manifesto</span>
-          <h1 class="manifesto-page-title" id="manifesto-title">Ideas for a greener, more equitable future.</h1>
-          <p class="manifesto-page-placeholder">The official 2027 manifesto will be published here once it is ready. Replace this placeholder with the approved manifesto text, sections, and publication details.</p>
+          <span class="section-kicker">Green Party Manifesto</span>
+          <h1 class="manifesto-page-title" id="manifesto-title">2026 Green Party Manifesto</h1>
+          <p class="manifesto-page-placeholder">Read the manifesto below, or open or download the PDF.</p>
           <div class="manifesto-page-actions">
-            <a class="button-primary" href="index.html#home">Return to home</a>
+            <a class="button-primary" href="Manifesto/2026_GREEN_PARTY_MANIFESTO.pdf" target="_blank" rel="noopener">Open PDF</a>
+            <a class="button-outline" href="Manifesto/2026_GREEN_PARTY_MANIFESTO.pdf" download>Download PDF</a>
           </div>
+          <iframe
+            class="manifesto-document-viewer"
+            src="Manifesto/2026_GREEN_PARTY_MANIFESTO.pdf#view=FitH"
+            title="2026 Green Party Manifesto PDF"
+          >Your browser cannot display the PDF. Use the Open PDF or Download PDF buttons above.</iframe>
         </div>
       </div>
     </section>
@@ -46,5 +61,25 @@
       <span>© 2026 Green Congress of Kenya</span>
     </div>
   </footer>
+  <script>
+    const menuToggle = document.querySelector("#menuToggle");
+    const navPanel = document.querySelector("#navPanel");
+    menuToggle.addEventListener("click", () => {
+      const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", String(!isOpen));
+      menuToggle.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+      navPanel.classList.toggle("is-open", !isOpen);
+      menuToggle.innerHTML = `<i class="fa-solid ${isOpen ? "fa-bars" : "fa-xmark"}" aria-hidden="true"></i>`;
+    });
+    navPanel.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuToggle.setAttribute("aria-label", "Open navigation");
+      navPanel.classList.remove("is-open");
+      menuToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+    }));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") menuToggle.click();
+    });
+  </script>
 </body>
 </html>
